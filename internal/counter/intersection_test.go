@@ -85,17 +85,50 @@ func Test_FindSetIntersection(t *testing.T) {
 
 	res, err := FindSetIntersection(first, second)
 	assert.NoError(t, err)
-	assert.Equal(t, &IntersectionResult{
-		First: &FileResult{
+	assert.Equal(t, IntersectionResult{
+		First: FileResult{
 			KeyCount:         8,
 			DistinctKeyCount: 6,
 		},
-		Second: &FileResult{
+		Second: FileResult{
 			KeyCount:         9,
 			DistinctKeyCount: 6,
 		},
 		DistinctOverlap: 4,
 		TotalOverlap:    5,
+	}, res)
+}
+
+func Test_FindSetIntersection_Nil(t *testing.T) {
+	_, err := FindSetIntersection(nil, nil)
+	assert.Error(t, err)
+}
+
+func Test_FindSetIntersection_Empty(t *testing.T) {
+	first := make(chan string, bufferSize)
+	second := make(chan string, bufferSize)
+
+	go func() {
+		defer close(first)
+	}()
+
+	go func() {
+		defer close(second)
+	}()
+
+	res, err := FindSetIntersection(first, second)
+	assert.NoError(t, err)
+	assert.Equal(t, IntersectionResult{
+		First: FileResult{
+			KeyCount:         0,
+			DistinctKeyCount: 0,
+		},
+		Second: FileResult{
+			KeyCount:         0,
+			DistinctKeyCount: 0,
+		},
+		DistinctOverlap: 0,
+		TotalOverlap:    0,
 	}, res)
 }
 
@@ -116,24 +149,7 @@ func Benchmark_findOverlaps(b *testing.B) {
 	}
 }
 
-func Benchmark_findOverlaps_Parallel(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-
-		input1 := make(map[string]int)
-		for i := 0; i < 100000; i++ {
-			input1[getRandomString(5)] = i
-		}
-
-		input2 := make(map[string]int)
-		for i := 0; i < 100000; i++ {
-			input2[getRandomString(5)] = i
-		}
-
-		_, _ = findOverlapsParallel(input1, input2)
-	}
-}
-
-func Benchmark_findSetIntersection_v1(b *testing.B) {
+func Benchmark_FindSetIntersection(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 
 		first := make(chan string, bufferSize)
@@ -154,81 +170,6 @@ func Benchmark_findSetIntersection_v1(b *testing.B) {
 			}
 		}()
 
-		_, _ = findSetIntersectionV1(first, second)
-	}
-}
-
-func Benchmark_findSetIntersection_v2(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-
-		first := make(chan string, bufferSize)
-		second := make(chan string, bufferSize)
-
-		// add to the channel
-		go func() {
-			defer close(first)
-			for i := 0; i < rowCount; i++ {
-				first <- getRandomString(keyLength)
-			}
-		}()
-
-		go func() {
-			defer close(second)
-			for i := 0; i < rowCount; i++ {
-				second <- getRandomString(keyLength)
-			}
-		}()
-
-		_, _ = findSetIntersectionV2(first, second)
-	}
-}
-
-func Benchmark_findSetIntersection_v3(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-
-		first := make(chan string, bufferSize)
-		second := make(chan string, bufferSize)
-
-		// add to the channel
-		go func() {
-			defer close(first)
-			for i := 0; i < rowCount; i++ {
-				first <- getRandomString(keyLength)
-			}
-		}()
-
-		go func() {
-			defer close(second)
-			for i := 0; i < rowCount; i++ {
-				second <- getRandomString(keyLength)
-			}
-		}()
-
-		_, _ = findSetIntersectionV3(first, second)
-	}
-}
-
-func Benchmark_findSetIntersection_v4(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-
-		first := make(chan string, bufferSize)
-		second := make(chan string, bufferSize)
-
-		// add to the channel
-		go func() {
-			defer close(first)
-			for i := 0; i < rowCount; i++ {
-				first <- getRandomString(keyLength)
-			}
-		}()
-
-		go func() {
-			defer close(second)
-			for i := 0; i < rowCount; i++ {
-				second <- getRandomString(keyLength)
-			}
-		}()
-
-		_, _ = findSetIntersectionV4(first, second)
+		_, _ = FindSetIntersection(first, second)
 	}
 }

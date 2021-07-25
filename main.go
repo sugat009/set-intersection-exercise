@@ -98,7 +98,6 @@ type appConfig struct {
 }
 
 func startApplication(cfg appConfig) error {
-
 	startedAt := time.Now()
 
 	firstKeys := make(chan string, cfg.BufferSize)
@@ -133,7 +132,7 @@ func startApplication(cfg appConfig) error {
 		}
 	}()
 
-	resultCh := make(chan *counter.IntersectionResult)
+	resultCh := make(chan counter.IntersectionResult)
 	go func() {
 		result, err := counter.FindSetIntersection(firstKeys, secondKeys)
 		if err != nil {
@@ -173,7 +172,7 @@ func fileToKeysChannel(filePath, key string, output chan<- string) error {
 	return nil
 }
 
-func showResult(firstFilePath, secondFilePath string, result *counter.IntersectionResult) {
+func showResult(firstFilePath, secondFilePath string, result counter.IntersectionResult) {
 	err := pterm.DefaultTable.WithHasHeader().WithData(pterm.TableData{
 		{
 			"Total keys in first table",
