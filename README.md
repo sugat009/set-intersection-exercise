@@ -8,7 +8,7 @@ Given two input files in CSV format and a key, the program outputs the total no.
 go run main.go --first-file=[path_to_first_file]] --second-file=[oath_to_second_file] --key=foo
 ```
 
-### Output 
+### Output
 
 ```text
 Count of keys ([path_to_first_file]]):           [no. of keys]
