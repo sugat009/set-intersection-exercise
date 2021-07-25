@@ -2,6 +2,7 @@ package counter
 
 import (
 	"errors"
+	"sync"
 )
 
 // FindSetIntersection finds counts the intersection of keys between two key streams.
@@ -11,26 +12,27 @@ func FindSetIntersection(first <-chan string, second <-chan string) (Intersectio
 		return IntersectionResult{}, errors.New("input channel cannot nil")
 	}
 
+	// find out if any channels are closed
 	return findSetIntersection(first, second)
 }
 
 func findSetIntersection(first <-chan string, second <-chan string) (IntersectionResult, error) {
-	firstDone, secondDone := make(chan int), make(chan int)
 	var firstKeys, secondKeys map[string]int
 	var firstTotalKeyCount, secondTotalKeyCount int
 
+	wg := sync.WaitGroup{}
+	wg.Add(2)
 	go func() {
 		firstKeys, firstTotalKeyCount = countKeys(first)
-		close(firstDone)
+		wg.Done()
 	}()
 
 	go func() {
 		secondKeys, secondTotalKeyCount = countKeys(second)
-		close(secondDone)
+		wg.Done()
 	}()
 
-	<-firstDone
-	<-secondDone
+	wg.Wait()
 
 	distinctOverlap, totalOverlap := findOverlaps(firstKeys, secondKeys)
 
@@ -53,18 +55,27 @@ func findSetIntersection(first <-chan string, second <-chan string) (Intersectio
 func countKeys(input <-chan string) (map[string]int, int) {
 	res := make(map[string]int)
 	totalCount := 0
+
+	var noMore bool
 	for {
-		item, more := <-input
-		if !more {
+		select {
+		case item, more := <-input:
+			if !more {
+				noMore = true
+				break
+			}
+
+			if _, ok := res[item]; !ok {
+				res[item] = 0
+			}
+			res[item]++
+			totalCount++
+		default:
+		}
+
+		if noMore {
 			break
 		}
-
-		if _, ok := res[item]; !ok {
-			res[item] = 0
-		}
-		res[item]++
-		totalCount++
-
 	}
 	return res, totalCount
 }

@@ -112,7 +112,7 @@ func startApplication(cfg appConfig) error {
 		if err := fileToKeysChannel(cfg.FirstSource, cfg.Key, firstKeys); err != nil {
 			errorCh <- err
 		}
-		pterm.Success.Println("Processed first file")
+		pterm.Success.Println(fmt.Sprintf("Processed first file. Elapsed: %s", time.Since(startedAt).String()))
 		taskSpinner.UpdateText("Completed reading first file. Still reading second file...")
 		readFirst = true
 		if readSecond {
@@ -124,7 +124,7 @@ func startApplication(cfg appConfig) error {
 		if err := fileToKeysChannel(cfg.SecondSource, cfg.Key, secondKeys); err != nil {
 			errorCh <- err
 		}
-		pterm.Success.Println("Processed second file")
+		pterm.Success.Println(fmt.Sprintf("Processed second file. Elapsed: %s", time.Since(startedAt).String()))
 		taskSpinner.UpdateText("Completed reading second file. Still reading first file...")
 		readSecond = true
 		if readFirst {

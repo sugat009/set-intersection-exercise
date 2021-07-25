@@ -108,13 +108,30 @@ func Test_FindSetIntersection_Empty(t *testing.T) {
 	first := make(chan string, bufferSize)
 	second := make(chan string, bufferSize)
 
-	go func() {
-		defer close(first)
-	}()
+	go close(first)
+	go close(second)
 
-	go func() {
-		defer close(second)
-	}()
+	res, err := FindSetIntersection(first, second)
+	assert.NoError(t, err)
+	assert.Equal(t, IntersectionResult{
+		First: FileResult{
+			KeyCount:         0,
+			DistinctKeyCount: 0,
+		},
+		Second: FileResult{
+			KeyCount:         0,
+			DistinctKeyCount: 0,
+		},
+		DistinctOverlap: 0,
+		TotalOverlap:    0,
+	}, res)
+}
+
+func Test_FindSetIntersection_ClosedChannel(t *testing.T) {
+	first := make(chan string, bufferSize)
+	second := make(chan string, bufferSize)
+	close(first)
+	close(second)
 
 	res, err := FindSetIntersection(first, second)
 	assert.NoError(t, err)
