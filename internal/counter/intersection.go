@@ -2,11 +2,13 @@ package counter
 
 import "sync"
 
+// FindSetIntersection finds counts the intersection of keys between two key streams.
+// Returns when both first and second channel is closed
 func FindSetIntersection(first <-chan string, second <-chan string) (*IntersectionResult, error) {
-	return findSetIntersection_v3(first, second)
+	return findSetIntersectionV3(first, second)
 }
 
-func findSetIntersection_v1(first <-chan string, second <-chan string) (*IntersectionResult, error) {
+func findSetIntersectionV1(first <-chan string, second <-chan string) (*IntersectionResult, error) {
 	firstKeys := make(map[string]int)
 	secondKeys := make(map[string]int)
 
@@ -56,7 +58,7 @@ func findSetIntersection_v1(first <-chan string, second <-chan string) (*Interse
 	return result, nil
 }
 
-func findSetIntersection_v2(first <-chan string, second <-chan string) (*IntersectionResult, error) {
+func findSetIntersectionV2(first <-chan string, second <-chan string) (*IntersectionResult, error) {
 	firstKeys, firstTotalKeyCount := countKeys(first)
 	secondKeys, secondTotalKeyCount := countKeys(second)
 
@@ -78,7 +80,7 @@ func findSetIntersection_v2(first <-chan string, second <-chan string) (*Interse
 	return result, nil
 }
 
-func findSetIntersection_v3(first <-chan string, second <-chan string) (*IntersectionResult, error) {
+func findSetIntersectionV3(first <-chan string, second <-chan string) (*IntersectionResult, error) {
 	firstDone, secondDone := make(chan int), make(chan int)
 	var firstKeys, secondKeys map[string]int
 	var firstTotalKeyCount, secondTotalKeyCount int
@@ -115,7 +117,7 @@ func findSetIntersection_v3(first <-chan string, second <-chan string) (*Interse
 }
 
 // blocks until both channel is closed
-func findSetIntersection_v4(first <-chan string, second <-chan string) (*IntersectionResult, error) {
+func findSetIntersectionV4(first <-chan string, second <-chan string) (*IntersectionResult, error) {
 	var firstTotalKeys, firstDistinctKeys, secondTotalKeys, secondDistinctKeys, totalOverlap, distinctOverlap int
 
 	firstMap := make(map[string]int)
@@ -228,7 +230,7 @@ func findOverlaps(firstKeys, secondKeys map[string]int) (int, int) {
 	return count, totalOverlap
 }
 
-func findOverlaps_Parallel(firstKeys, secondKeys map[string]int) (int, int) {
+func findOverlapsParallel(firstKeys, secondKeys map[string]int) (int, int) {
 	count := 0
 	totalOverlap := 0
 
@@ -256,6 +258,7 @@ func findOverlaps_Parallel(firstKeys, secondKeys map[string]int) (int, int) {
 	return count, totalOverlap
 }
 
+// IntersectionResult represents result of intersection count
 type IntersectionResult struct {
 	First           *FileResult
 	Second          *FileResult
@@ -263,6 +266,7 @@ type IntersectionResult struct {
 	DistinctOverlap int
 }
 
+// FileResult represents result of a file key count
 type FileResult struct {
 	KeyCount         int
 	DistinctKeyCount int

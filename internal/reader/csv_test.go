@@ -63,46 +63,46 @@ func Test_ReadKeysFromCsvIntoChannel_EmptyKey(t *testing.T) {
 }
 
 func Benchmark_ReadKeysFromCsvIntoChannel_1(b *testing.B) {
-	benchmark_ReadKeysFromCsvIntoChannel(1, b)
+	benchmarkReadKeysFromCsvIntoChannel(1, b)
 }
 
 func Benchmark_ReadKeysFromCsvIntoChannel_2(b *testing.B) {
-	benchmark_ReadKeysFromCsvIntoChannel(2, b)
+	benchmarkReadKeysFromCsvIntoChannel(2, b)
 }
 
 func Benchmark_ReadKeysFromCsvIntoChannel_4(b *testing.B) {
-	benchmark_ReadKeysFromCsvIntoChannel(4, b)
+	benchmarkReadKeysFromCsvIntoChannel(4, b)
 }
 
 func Benchmark_ReadKeysFromCsvIntoChannel_8(b *testing.B) {
-	benchmark_ReadKeysFromCsvIntoChannel(8, b)
+	benchmarkReadKeysFromCsvIntoChannel(8, b)
 }
 
 func Benchmark_ReadKeysFromCsvIntoChannel_16(b *testing.B) {
-	benchmark_ReadKeysFromCsvIntoChannel(16, b)
+	benchmarkReadKeysFromCsvIntoChannel(16, b)
 }
 
 func Benchmark_ReadKeysFromCsvIntoChannel_32(b *testing.B) {
-	benchmark_ReadKeysFromCsvIntoChannel(32, b)
+	benchmarkReadKeysFromCsvIntoChannel(32, b)
 }
 
 func Benchmark_ReadKeysFromCsvIntoChannel_64(b *testing.B) {
-	benchmark_ReadKeysFromCsvIntoChannel(64, b)
+	benchmarkReadKeysFromCsvIntoChannel(64, b)
 }
 
 func Benchmark_ReadKeysFromCsvIntoChannel_128(b *testing.B) {
-	benchmark_ReadKeysFromCsvIntoChannel(128, b)
+	benchmarkReadKeysFromCsvIntoChannel(128, b)
 }
 
 func Benchmark_ReadKeysFromCsvIntoChannel_256(b *testing.B) {
-	benchmark_ReadKeysFromCsvIntoChannel(256, b)
+	benchmarkReadKeysFromCsvIntoChannel(256, b)
 }
 
 func Benchmark_ReadKeysFromCsvIntoChannel_512(b *testing.B) {
-	benchmark_ReadKeysFromCsvIntoChannel(512, b)
+	benchmarkReadKeysFromCsvIntoChannel(512, b)
 }
 
-func benchmark_ReadKeysFromCsvIntoChannel(buf int, b *testing.B) {
+func benchmarkReadKeysFromCsvIntoChannel(buf int, b *testing.B) {
 	for i := 0; i < b.N; i++ {
 
 		outputChan := make(chan string, buf)
@@ -115,12 +115,12 @@ func benchmark_ReadKeysFromCsvIntoChannel(buf int, b *testing.B) {
 			}
 		}()
 
-		_ = ReadKeysFromCsvIntoChannel("key", strings.NewReader(getinputFile_1000()), outputChan)
+		_ = ReadKeysFromCsvIntoChannel("key", strings.NewReader(getinputFile1000()), outputChan)
 		close(outputChan)
 	}
 }
 
-func getinputFile_1000() string {
+func getinputFile1000() string {
 	return `foo,bar,baz
 ab0b5b4e,1b,27531
 b9927308,c9,25846

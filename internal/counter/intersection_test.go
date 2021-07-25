@@ -129,7 +129,7 @@ func Benchmark_findOverlaps_Parallel(b *testing.B) {
 			input2[getRandomString(5)] = i
 		}
 
-		_, _ = findOverlaps_Parallel(input1, input2)
+		_, _ = findOverlapsParallel(input1, input2)
 	}
 }
 
@@ -154,7 +154,7 @@ func Benchmark_findSetIntersection_v1(b *testing.B) {
 			}
 		}()
 
-		_, _ = findSetIntersection_v1(first, second)
+		_, _ = findSetIntersectionV1(first, second)
 	}
 }
 
@@ -179,7 +179,7 @@ func Benchmark_findSetIntersection_v2(b *testing.B) {
 			}
 		}()
 
-		_, _ = findSetIntersection_v2(first, second)
+		_, _ = findSetIntersectionV2(first, second)
 	}
 }
 
@@ -204,7 +204,7 @@ func Benchmark_findSetIntersection_v3(b *testing.B) {
 			}
 		}()
 
-		_, _ = findSetIntersection_v3(first, second)
+		_, _ = findSetIntersectionV3(first, second)
 	}
 }
 
@@ -229,6 +229,6 @@ func Benchmark_findSetIntersection_v4(b *testing.B) {
 			}
 		}()
 
-		_, _ = findSetIntersection_v4(first, second)
+		_, _ = findSetIntersectionV4(first, second)
 	}
 }

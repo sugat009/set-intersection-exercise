@@ -7,6 +7,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// ReadKeysFromCsvIntoChannel reads csv content to find key for each row and push into the passed in channel
+// returns when end of file is reached or when error
 func ReadKeysFromCsvIntoChannel(key string, reader io.Reader, keysOuput chan<- string) error {
 	if reader == nil {
 		return errors.New("csv source is nil")
