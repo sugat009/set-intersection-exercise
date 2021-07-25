@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/rickyshrestha/infosum-interview-exercise/internal/counter"
 	"github.com/rickyshrestha/infosum-interview-exercise/internal/reader"
 	"github.com/tav/golly/log"
@@ -97,30 +97,41 @@ type appConfig struct {
 }
 
 func startApplication(cfg appConfig) error {
-	benchStart := time.Now()
 
 	firstKeys := make(chan string, cfg.BufferSize)
 	secondKeys := make(chan string, cfg.BufferSize)
 
 	errorCh := make(chan error)
 
+	taskSpinner, _ := pterm.DefaultSpinner.Start(fmt.Sprintf("Reading files %s and %s using key: %s", cfg.FirstSource, cfg.SecondSource, cfg.Key))
+
+	var readFirst, readSecond bool
 	go func() {
 		if err := fileToKeysChannel(cfg.FirstSource, cfg.Key, firstKeys); err != nil {
 			errorCh <- err
 		}
-		log.Infof("Processed: %s", cfg.FirstSource)
+		pterm.Success.Println("Processed first file")
+		taskSpinner.UpdateText("Completed reading first file. Still reading second file...")
+		readFirst = true
+		if readSecond {
+			taskSpinner.UpdateText("Finding intersections...")
+		}
 	}()
 
 	go func() {
 		if err := fileToKeysChannel(cfg.SecondSource, cfg.Key, secondKeys); err != nil {
 			errorCh <- err
 		}
-		log.Infof("Processed: %s", cfg.SecondSource)
+		pterm.Success.Println("Processed second file")
+		taskSpinner.UpdateText("Completed reading second file. Still reading first file...")
+		readSecond = true
+		if readFirst {
+			taskSpinner.UpdateText("Finding intersections...")
+		}
 	}()
 
 	resultCh := make(chan *counter.IntersectionResult)
 	go func() {
-		log.Infof("Finding intersections in: %s & %s using key: %s ...", cfg.FirstSource, cfg.SecondSource, cfg.Key)
 		result, err := counter.FindSetIntersection(firstKeys, secondKeys)
 		if err != nil {
 			errorCh <- errors.Wrap(err, "while finding intersection")
@@ -130,10 +141,11 @@ func startApplication(cfg appConfig) error {
 
 	select {
 	case err := <-errorCh:
+		taskSpinner.Fail("Process crashed")
 		return err
 	case result := <-resultCh:
+		taskSpinner.Success("Process completed")
 		showResult(cfg.FirstSource, cfg.SecondSource, result)
-		log.Infof("elapsed: %s", time.Since(benchStart).String())
 	}
 	return nil
 }
@@ -159,11 +171,22 @@ func fileToKeysChannel(filePath, key string, output chan<- string) error {
 }
 
 func showResult(firstFilePath, secondFilePath string, result *counter.IntersectionResult) {
-	fmt.Printf("Count of keys (%s):\t\t%v\n", firstFilePath, result.First.KeyCount)
-	fmt.Printf("Count of distinct keys (%s):\t%v\n", firstFilePath, result.First.DistinctKeyCount)
-	fmt.Printf("Count of keys (%s):\t\t%v\n", secondFilePath, result.Second.KeyCount)
-	fmt.Printf("Count of distinct keys (%s):\t%v\n", secondFilePath, result.Second.DistinctKeyCount)
-
-	fmt.Printf("Total overlapping keys:\t\t\t\t%v\n", result.TotalOverlap)
-	fmt.Printf("Distinct overlapping keys:\t\t\t%v\n", result.DistinctOverlap)
+	pterm.DefaultTable.WithHasHeader().WithData(pterm.TableData{
+		{
+			"Total keys in first table",
+			"Distinct keys in first table",
+			"Total keys in second table",
+			"Distinct keys in second table",
+			"Total Overlap",
+			"Distinct Overlap",
+		},
+		{
+			fmt.Sprintf("%v", result.First.KeyCount),
+			fmt.Sprintf("%v", result.First.DistinctKeyCount),
+			fmt.Sprintf("%v", result.Second.KeyCount),
+			fmt.Sprintf("%v", result.Second.DistinctKeyCount),
+			fmt.Sprintf("%v", result.TotalOverlap),
+			fmt.Sprintf("%v", result.DistinctOverlap),
+		},
+	}).Render()
 }

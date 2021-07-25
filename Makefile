@@ -15,6 +15,7 @@ RUNFLAGS += "--second-file=./testdata/tiny_2.csv"
 RUNFLAGS += "--key=key"
 
 run: 
+	go mod tidy
 	go run main.go $(RUNFLAGS)
 
 run-med: 
