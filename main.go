@@ -21,10 +21,9 @@ const (
 )
 
 func main() {
-
 	app := &cli.App{
 		Name:  "set-intersection",
-		Usage: "find intersections beetween two csv files dataset using a common key",
+		Usage: "Given two input files in CSV format and a key, the program outputs the total no. of keys and distinct no. of keys in each file. It also provides the total overlap and distinct overlap between the two files.",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:   flagFirstFile,
@@ -70,7 +69,6 @@ func run(context *cli.Context) error {
 }
 
 func parseAppConfig(context *cli.Context) (appConfig, error) {
-
 	config := appConfig{}
 	config.BufferSize = context.Int(flagBufferSize)
 
@@ -99,7 +97,6 @@ type appConfig struct {
 }
 
 func startApplication(cfg appConfig) error {
-
 	benchStart := time.Now()
 
 	firstKeys := make(chan string, cfg.BufferSize)
@@ -142,14 +139,17 @@ func startApplication(cfg appConfig) error {
 }
 
 func fileToKeysChannel(filePath, key string, output chan<- string) error {
-
 	defer close(output)
 
 	file, err := os.Open(filePath)
 	if err != nil {
 		return errors.Wrapf(err, "unable to read file: %s", filePath)
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Errorf("unable to close file: %s", filePath)
+		}
+	}()
 
 	if err := reader.ReadKeysFromCsvIntoChannel(key, bufio.NewReader(file), output); err != nil {
 		return errors.Wrapf(err, "while processing file: %s", filePath)
@@ -159,7 +159,6 @@ func fileToKeysChannel(filePath, key string, output chan<- string) error {
 }
 
 func showResult(firstFilePath, secondFilePath string, result *counter.IntersectionResult) {
-
 	fmt.Printf("Count of keys (%s):\t\t%v\n", firstFilePath, result.First.KeyCount)
 	fmt.Printf("Count of distinct keys (%s):\t%v\n", firstFilePath, result.First.DistinctKeyCount)
 	fmt.Printf("Count of keys (%s):\t\t%v\n", secondFilePath, result.Second.KeyCount)

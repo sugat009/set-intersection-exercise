@@ -4,7 +4,7 @@ build:
 	go build -o set-intersection main.go
 
 test:
-	go test -v --cover -race ./...
+	go test -v -cover -race ./...
 
 lint:
 	golangci-lint run
@@ -27,3 +27,6 @@ run-large:
 bench:
 	cd internal/counter && go test -benchmem -bench=.
 	cd internal/reader && go test -benchmem -bench=.
+
+check: test
+	astitodo . && go mod tidy && gofumpt -s -w . && goimports -w . && gocyclo -top 5 . && errcheck ./... && goconst ./... && go vet ./... && golangci-lint run && golint ./... && go clean -testcache ./... 

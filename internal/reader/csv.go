@@ -8,7 +8,6 @@ import (
 )
 
 func ReadKeysFromCsvIntoChannel(key string, reader io.Reader, keysOuput chan<- string) error {
-
 	if reader == nil {
 		return errors.New("csv source is nil")
 	}

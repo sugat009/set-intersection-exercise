@@ -14,7 +14,6 @@ b, 1, 2
 `
 
 func Test_ReadKeysFromCsvIntoChannel(t *testing.T) {
-
 	outputChan := make(chan string)
 
 	go func() {
@@ -36,7 +35,6 @@ func Test_ReadKeysFromCsvIntoChannel(t *testing.T) {
 }
 
 func Test_ReadKeysFromCsvIntoChannel_Empty(t *testing.T) {
-
 	outputChan := make(chan string)
 
 	go func() {

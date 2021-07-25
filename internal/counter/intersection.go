@@ -7,7 +7,6 @@ func FindSetIntersection(first <-chan string, second <-chan string) (*Intersecti
 }
 
 func findSetIntersection_v1(first <-chan string, second <-chan string) (*IntersectionResult, error) {
-
 	firstKeys := make(map[string]int)
 	secondKeys := make(map[string]int)
 
@@ -58,7 +57,6 @@ func findSetIntersection_v1(first <-chan string, second <-chan string) (*Interse
 }
 
 func findSetIntersection_v2(first <-chan string, second <-chan string) (*IntersectionResult, error) {
-
 	firstKeys, firstTotalKeyCount := countKeys(first)
 	secondKeys, secondTotalKeyCount := countKeys(second)
 
@@ -81,7 +79,6 @@ func findSetIntersection_v2(first <-chan string, second <-chan string) (*Interse
 }
 
 func findSetIntersection_v3(first <-chan string, second <-chan string) (*IntersectionResult, error) {
-
 	firstDone, secondDone := make(chan int), make(chan int)
 	var firstKeys, secondKeys map[string]int
 	var firstTotalKeyCount, secondTotalKeyCount int
@@ -117,9 +114,8 @@ func findSetIntersection_v3(first <-chan string, second <-chan string) (*Interse
 	return result, nil
 }
 
-//blocks until both channel is closed
+// blocks until both channel is closed
 func findSetIntersection_v4(first <-chan string, second <-chan string) (*IntersectionResult, error) {
-
 	var firstTotalKeys, firstDistinctKeys, secondTotalKeys, secondDistinctKeys, totalOverlap, distinctOverlap int
 
 	firstMap := make(map[string]int)
@@ -270,14 +266,6 @@ type IntersectionResult struct {
 type FileResult struct {
 	KeyCount         int
 	DistinctKeyCount int
-}
-
-func findMaximum(a, b int) int {
-	if a > b {
-		return a
-	}
-
-	return b
 }
 
 func findMinimum(a, b int) int {

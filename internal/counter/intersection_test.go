@@ -55,7 +55,6 @@ func Test_findOverlaps_MultipleOverlaps(t *testing.T) {
 }
 
 func Test_FindSetIntersection(t *testing.T) {
-
 	first := make(chan string, bufferSize)
 	second := make(chan string, bufferSize)
 
@@ -135,13 +134,12 @@ func Benchmark_findOverlaps_Parallel(b *testing.B) {
 }
 
 func Benchmark_findSetIntersection_v1(b *testing.B) {
-
 	for i := 0; i < b.N; i++ {
 
 		first := make(chan string, bufferSize)
 		second := make(chan string, bufferSize)
 
-		//add to the channel
+		// add to the channel
 		go func() {
 			defer close(first)
 			for i := 0; i < rowCount; i++ {
@@ -161,13 +159,12 @@ func Benchmark_findSetIntersection_v1(b *testing.B) {
 }
 
 func Benchmark_findSetIntersection_v2(b *testing.B) {
-
 	for i := 0; i < b.N; i++ {
 
 		first := make(chan string, bufferSize)
 		second := make(chan string, bufferSize)
 
-		//add to the channel
+		// add to the channel
 		go func() {
 			defer close(first)
 			for i := 0; i < rowCount; i++ {
@@ -187,13 +184,12 @@ func Benchmark_findSetIntersection_v2(b *testing.B) {
 }
 
 func Benchmark_findSetIntersection_v3(b *testing.B) {
-
 	for i := 0; i < b.N; i++ {
 
 		first := make(chan string, bufferSize)
 		second := make(chan string, bufferSize)
 
-		//add to the channel
+		// add to the channel
 		go func() {
 			defer close(first)
 			for i := 0; i < rowCount; i++ {
@@ -213,13 +209,12 @@ func Benchmark_findSetIntersection_v3(b *testing.B) {
 }
 
 func Benchmark_findSetIntersection_v4(b *testing.B) {
-
 	for i := 0; i < b.N; i++ {
 
 		first := make(chan string, bufferSize)
 		second := make(chan string, bufferSize)
 
-		//add to the channel
+		// add to the channel
 		go func() {
 			defer close(first)
 			for i := 0; i < rowCount; i++ {
@@ -235,11 +230,5 @@ func Benchmark_findSetIntersection_v4(b *testing.B) {
 		}()
 
 		_, _ = findSetIntersection_v4(first, second)
-	}
-}
-
-func populateChannel(input chan<- string) {
-	for i := 0; i < rowCount; i++ {
-		input <- getRandomString(keyLength)
 	}
 }
