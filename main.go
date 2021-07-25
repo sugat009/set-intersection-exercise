@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
@@ -98,6 +99,8 @@ type appConfig struct {
 
 func startApplication(cfg appConfig) error {
 
+	startedAt := time.Now()
+
 	firstKeys := make(chan string, cfg.BufferSize)
 	secondKeys := make(chan string, cfg.BufferSize)
 
@@ -144,7 +147,7 @@ func startApplication(cfg appConfig) error {
 		taskSpinner.Fail("Process crashed")
 		return err
 	case result := <-resultCh:
-		taskSpinner.Success("Process completed")
+		taskSpinner.Success(fmt.Sprintf("Process completed. Elapsed: %s", time.Since(startedAt).String()))
 		showResult(cfg.FirstSource, cfg.SecondSource, result)
 	}
 	return nil
@@ -171,7 +174,7 @@ func fileToKeysChannel(filePath, key string, output chan<- string) error {
 }
 
 func showResult(firstFilePath, secondFilePath string, result *counter.IntersectionResult) {
-	pterm.DefaultTable.WithHasHeader().WithData(pterm.TableData{
+	err := pterm.DefaultTable.WithHasHeader().WithData(pterm.TableData{
 		{
 			"Total keys in first table",
 			"Distinct keys in first table",
@@ -189,4 +192,7 @@ func showResult(firstFilePath, secondFilePath string, result *counter.Intersecti
 			fmt.Sprintf("%v", result.DistinctOverlap),
 		},
 	}).Render()
+	if err != nil {
+		log.Error(err.Error())
+	}
 }

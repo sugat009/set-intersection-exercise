@@ -8,6 +8,7 @@ test:
 
 lint:
 	golangci-lint run
+	golint ./...
 
 RUNFLAGS = 
 RUNFLAGS += "--first-file=./testdata/tiny_1.csv"
@@ -19,15 +20,18 @@ run:
 	go run main.go $(RUNFLAGS)
 
 run-med: 
-	go run main.go --first-file=./testdata/med_1.csv --second-file=./testdata/med_2.csv --key=foo
+	go run main.go --first-file=./testdata/med_1.csv --second-file=./testdata/med_2.csv --key=foo --buffer-size=1024
 
 
 run-large: 
-	go run main.go --first-file=./testdata/large_1.csv --second-file=./testdata/large_2.csv --key=foo
+	go run main.go --first-file=./testdata/large_1.csv --second-file=./testdata/large_2.csv --key=foo --buffer-size=1024
+
+run-x-large: 
+	go run main.go --first-file=./testdata/x_large_1.csv --second-file=./testdata/x_large_2.csv --key=foo --buffer-size 1024
 
 bench:
 	cd internal/counter && go test -benchmem -bench=.
 	cd internal/reader && go test -benchmem -bench=.
 
-check: test
-	astitodo . && go mod tidy && gofumpt -s -w . && goimports -w . && gocyclo -top 5 . && errcheck ./... && goconst ./... && go vet ./... && golangci-lint run && golint ./... && go clean -testcache ./... 
+check: lint test
+	astitodo . && go mod tidy && gofumpt -s -w . && goimports -w . && gocyclo -top 5 . && errcheck ./... && goconst ./... && go vet ./... && go clean -testcache ./... 
