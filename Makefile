@@ -1,6 +1,8 @@
+SERVICE=set-intersection-exercise
+
 build:
 	go mod tidy
-	go build -o set-intersection-exercise main.go
+	go build -o $(SERVICE) main.go
 
 test:
 	go test -v -cover -race ./...
@@ -34,3 +36,10 @@ bench:
 
 check: test lint
 	astitodo . && go mod tidy && gofumpt -s -w . && goimports -w . && gocyclo -top 5 . && errcheck ./... && goconst ./... && go vet ./... && go clean -testcache ./... 
+
+release:
+	GOOS=darwin GOARCH=amd64  go build -o releases/$(SERVICE)-darwin-amd64 main.go
+	GOOS=linux GOARCH=amd64 go build -o releases/$(SERVICE)-linux-amd64 main.go
+	GOOS=linux GOARCH=386 go build -o releases/$(SERVICE)-linux-386 main.go
+	GOOS=windows GOARCH=amd64 go build -o releases/$(SERVICE)-windows-amd64.exe main.go
+	GOOS=windows GOARCH=386 go build -o releases/$(SERVICE)-windows-386.exe main.go
