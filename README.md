@@ -1,1 +1,1 @@
-# infosum-interview-exercise
+# set-intersection-exercise
