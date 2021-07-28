@@ -28,16 +28,15 @@ func ReadKeysFromCsvIntoChannel(key string, reader io.Reader, keysOuput chan<- s
 			return errors.Wrap(err, "while reading from reader")
 		}
 
-		if headerKeyIndex == -1 {
+		switch headerKeyIndex {
+		case -1:
 			headerKeyIndex, err = getIndex(row, key)
 			if err != nil {
 				return errors.Errorf("header: %s does not exist", key)
 			}
-
-			continue
+		default:
+			keysOuput <- row[headerKeyIndex]
 		}
-
-		keysOuput <- row[headerKeyIndex]
 	}
 
 	return nil

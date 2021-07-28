@@ -54,6 +54,32 @@ func Test_findOverlaps_MultipleOverlaps(t *testing.T) {
 	assert.Equal(t, 4, total)
 }
 
+func Test_findOverlapsUsingWorkerPool(t *testing.T) {
+	distinct, total := findOverlapsUsingWorkerPool(map[string]int{
+		"a": 1,
+	}, map[string]int{
+		"a": 1,
+	}, 2)
+	assert.Equal(t, 1, distinct)
+	assert.Equal(t, 1, total)
+}
+
+func Test_findOverlapsUsingWorkerPool_MultipleOverlaps(t *testing.T) {
+	distinct, total := findOverlapsUsingWorkerPool(map[string]int{
+		"a": 1,
+		"b": 2,
+		"c": 3,
+		"d": 4,
+	}, map[string]int{
+		"a": 3,
+		"b": 2,
+		"c": 1,
+		"e": 2,
+	}, 1)
+	assert.Equal(t, 3, distinct)
+	assert.Equal(t, 4, total)
+}
+
 func Test_FindSetIntersection(t *testing.T) {
 	first := make(chan string, bufferSize)
 	second := make(chan string, bufferSize)
@@ -153,16 +179,33 @@ func Benchmark_findOverlaps(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 
 		input1 := make(map[string]int)
-		for i := 0; i < 100000; i++ {
-			input1[getRandomString(5)] = i
+		for i := 0; i < 5000; i++ {
+			input1[getRandomString(3)] = i
 		}
 
 		input2 := make(map[string]int)
-		for i := 0; i < 100000; i++ {
-			input2[getRandomString(5)] = i
+		for i := 0; i < 5000; i++ {
+			input2[getRandomString(3)] = i
 		}
 
 		_, _ = findOverlaps(input1, input2)
+	}
+}
+
+func Benchmark_findOverlapsUsingWorkerPool(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+
+		input1 := make(map[string]int)
+		for i := 0; i < 5000; i++ {
+			input1[getRandomString(3)] = i
+		}
+
+		input2 := make(map[string]int)
+		for i := 0; i < 5000; i++ {
+			input2[getRandomString(3)] = i
+		}
+
+		_, _ = findOverlapsUsingWorkerPool(input1, input2, 5000)
 	}
 }
 
