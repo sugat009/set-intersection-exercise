@@ -10,9 +10,9 @@ import (
 	"github.com/tav/golly/log"
 	"github.com/urfave/cli"
 
-	"github.com/rickyshrestha/infosum-interview-exercise/internal/app"
-	"github.com/rickyshrestha/infosum-interview-exercise/internal/counter"
-	"github.com/rickyshrestha/infosum-interview-exercise/internal/reader"
+	"github.com/rickyshrestha/set-intersection-exercise/internal/app"
+	"github.com/rickyshrestha/set-intersection-exercise/internal/counter"
+	"github.com/rickyshrestha/set-intersection-exercise/internal/reader"
 )
 
 const (

@@ -1,4 +1,4 @@
-module github.com/rickyshrestha/infosum-interview-exercise
+module github.com/rickyshrestha/set-intersection-exercise
 
 go 1.16
 

@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/rickyshrestha/infosum-interview-exercise/internal/counter"
+	"github.com/rickyshrestha/set-intersection-exercise/internal/counter"
 )
 
 func mockReadKeyFromFile(key string, reader io.Reader, keysOutput chan<- string) error {

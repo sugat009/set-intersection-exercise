@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/tav/golly/log"
 
-	"github.com/rickyshrestha/infosum-interview-exercise/internal/counter"
+	"github.com/rickyshrestha/set-intersection-exercise/internal/counter"
 )
 
 // ReadKeyFromFileFunc signature of function that can be used to read keys from a file
