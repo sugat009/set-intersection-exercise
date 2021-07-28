@@ -3,6 +3,7 @@ package reader
 import (
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -112,6 +113,9 @@ func benchmarkReadKeysFromCsvIntoChannel(buf int, b *testing.B) {
 				if !more {
 					break
 				}
+
+				//simulate delay in consumption
+				time.Sleep(time.Duration(100 * int(time.Millisecond)))
 			}
 		}()
 

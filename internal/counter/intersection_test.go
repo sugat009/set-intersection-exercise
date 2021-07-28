@@ -9,7 +9,7 @@ import (
 const (
 	bufferSize = 32
 	keyLength  = 500
-	rowCount   = 500000
+	rowCount   = 50000
 )
 
 func Test_findOverlaps_Empty(t *testing.T) {

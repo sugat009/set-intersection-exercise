@@ -50,3 +50,16 @@ func Test_Start_Success(t *testing.T) {
 		DistinctOverlap: 4,
 	}, res)
 }
+
+func Benchmark_AppStart(b *testing.B) {
+	a := NewApp(mockReadKeyFromFile)
+
+	for i := 0; i < b.N; i++ {
+		_, _ = a.Start(RuntimeParam{
+			FirstSource:  "./testdata/first.txt",
+			SecondSource: "./testdata/second.txt",
+			Key:          "key",
+			BufferSize:   64,
+		})
+	}
+}

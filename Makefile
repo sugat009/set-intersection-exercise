@@ -33,6 +33,7 @@ run-x-large:
 bench:
 	cd internal/counter && go test -benchmem -bench=.
 	cd internal/reader && go test -benchmem -bench=.
+	cd internal/app && go test -benchmem -bench=.
 
 check: test lint
 	astitodo . && go mod tidy && gofumpt -s -w . && goimports -w . && gocyclo -top 5 . && errcheck ./... && goconst ./... && go vet ./... && go clean -testcache ./... 
