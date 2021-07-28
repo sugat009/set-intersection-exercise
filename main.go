@@ -96,6 +96,9 @@ func parseAppConfig(context *cli.Context) (app.RuntimeParam, error) {
 	}
 
 	config.Key = context.String(flagKey)
+	if config.Key == "" {
+		return config, errors.New("key cannot be empty")
+	}
 
 	return config, nil
 }
