@@ -90,12 +90,7 @@ func findOverlaps(firstKeys, secondKeys map[string]int) (int, int) {
 	for fk, fv := range firstKeys {
 		if sv, ok := secondKeys[fk]; ok {
 			distinctOverlaps++
-
-			if fv < sv {
-				totalOverlaps += fv
-			} else {
-				totalOverlaps += sv
-			}
+			totalOverlaps += fv * sv
 		}
 	}
 	return distinctOverlaps, totalOverlaps

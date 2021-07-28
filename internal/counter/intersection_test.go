@@ -51,7 +51,7 @@ func Test_findOverlaps_MultipleOverlaps(t *testing.T) {
 		"e": 2,
 	})
 	assert.Equal(t, 3, distinct)
-	assert.Equal(t, 4, total)
+	assert.Equal(t, 10, total)
 }
 
 func Test_findOverlapsUsingWorkerPool(t *testing.T) {
@@ -121,7 +121,7 @@ func Test_FindSetIntersection(t *testing.T) {
 			DistinctKeyCount: 6,
 		},
 		DistinctOverlap: 4,
-		TotalOverlap:    5,
+		TotalOverlap:    11,
 	}, res)
 }
 
