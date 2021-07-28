@@ -1,17 +1,18 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"time"
 
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
-	"github.com/rickyshrestha/infosum-interview-exercise/internal/counter"
-	"github.com/rickyshrestha/infosum-interview-exercise/internal/reader"
 	"github.com/tav/golly/log"
 	"github.com/urfave/cli"
+
+	"github.com/rickyshrestha/infosum-interview-exercise/internal/app"
+	"github.com/rickyshrestha/infosum-interview-exercise/internal/counter"
+	"github.com/rickyshrestha/infosum-interview-exercise/internal/reader"
 )
 
 const (
@@ -57,20 +58,27 @@ func main() {
 }
 
 func run(context *cli.Context) error {
+	startedAt := time.Now()
+
 	cfg, err := parseAppConfig(context)
 	if err != nil {
 		return errors.Wrap(err, "invalid application configs")
 	}
 
-	if err := startApplication(cfg); err != nil {
+	counterApp := app.NewApp(reader.ReadKeysFromCsvIntoChannel)
+
+	result, err := counterApp.Start(cfg)
+	if err != nil {
 		return errors.Wrap(err, "while running application")
 	}
 
+	showResult(cfg.FirstSource, cfg.SecondSource, result)
+	pterm.DefaultSpinner.Success(fmt.Sprintf("Process completed. Elapsed: %s", time.Since(startedAt).String()))
 	return nil
 }
 
-func parseAppConfig(context *cli.Context) (appConfig, error) {
-	config := appConfig{}
+func parseAppConfig(context *cli.Context) (app.RuntimeParam, error) {
+	config := app.RuntimeParam{}
 	config.BufferSize = context.Int(flagBufferSize)
 
 	if config.BufferSize <= 0 {
@@ -90,86 +98,6 @@ func parseAppConfig(context *cli.Context) (appConfig, error) {
 	config.Key = context.String(flagKey)
 
 	return config, nil
-}
-
-type appConfig struct {
-	FirstSource, SecondSource, Key string
-	BufferSize                     int
-}
-
-func startApplication(cfg appConfig) error {
-	startedAt := time.Now()
-
-	firstKeys := make(chan string, cfg.BufferSize)
-	secondKeys := make(chan string, cfg.BufferSize)
-
-	errorCh := make(chan error)
-
-	taskSpinner, _ := pterm.DefaultSpinner.Start(fmt.Sprintf("Reading files %s and %s using key: %s", cfg.FirstSource, cfg.SecondSource, cfg.Key))
-
-	var readFirst, readSecond bool
-	go func() {
-		if err := fileToKeysChannel(cfg.FirstSource, cfg.Key, firstKeys); err != nil {
-			errorCh <- err
-		}
-		pterm.Success.Println(fmt.Sprintf("Processed first file. Elapsed: %s", time.Since(startedAt).String()))
-		taskSpinner.UpdateText("Completed reading first file. Still reading second file...")
-		readFirst = true
-		if readSecond {
-			taskSpinner.UpdateText("Finding intersections...")
-		}
-	}()
-
-	go func() {
-		if err := fileToKeysChannel(cfg.SecondSource, cfg.Key, secondKeys); err != nil {
-			errorCh <- err
-		}
-		pterm.Success.Println(fmt.Sprintf("Processed second file. Elapsed: %s", time.Since(startedAt).String()))
-		taskSpinner.UpdateText("Completed reading second file. Still reading first file...")
-		readSecond = true
-		if readFirst {
-			taskSpinner.UpdateText("Finding intersections...")
-		}
-	}()
-
-	resultCh := make(chan counter.IntersectionResult)
-	go func() {
-		result, err := counter.FindSetIntersection(firstKeys, secondKeys)
-		if err != nil {
-			errorCh <- errors.Wrap(err, "while finding intersection")
-		}
-		resultCh <- result
-	}()
-
-	select {
-	case err := <-errorCh:
-		taskSpinner.Fail("Process crashed")
-		return err
-	case result := <-resultCh:
-		taskSpinner.Success(fmt.Sprintf("Process completed. Elapsed: %s", time.Since(startedAt).String()))
-		showResult(cfg.FirstSource, cfg.SecondSource, result)
-	}
-	return nil
-}
-
-func fileToKeysChannel(filePath, key string, output chan<- string) error {
-	defer close(output)
-
-	file, err := os.Open(filePath)
-	if err != nil {
-		return errors.Wrapf(err, "unable to read file: %s", filePath)
-	}
-	defer func() {
-		if err := file.Close(); err != nil {
-			log.Errorf("unable to close file: %s", filePath)
-		}
-	}()
-
-	if err := reader.ReadKeysFromCsvIntoChannel(key, bufio.NewReader(file), output); err != nil {
-		return errors.Wrapf(err, "while processing file: %s", filePath)
-	}
-
-	return nil
 }
 
 func showResult(firstFilePath, secondFilePath string, result counter.IntersectionResult) {

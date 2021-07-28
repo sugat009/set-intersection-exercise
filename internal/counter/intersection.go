@@ -3,8 +3,6 @@ package counter
 import (
 	"errors"
 	"sync"
-
-	"github.com/rickyshrestha/infosum-interview-exercise/internal/pool"
 )
 
 // FindSetIntersection finds counts the intersection of keys between two key streams.
@@ -36,7 +34,7 @@ func findSetIntersection(first <-chan string, second <-chan string) (Intersectio
 
 	wg.Wait()
 
-	//distinctOverlap, totalOverlap := findOverlapsUsingWorkerPool(firstKeys, secondKeys, 1024)
+	// distinctOverlap, totalOverlap := findOverlapsUsingWorkerPool(firstKeys, secondKeys, 1024)
 	distinctOverlap, totalOverlap := findOverlaps(firstKeys, secondKeys)
 
 	result := IntersectionResult{
@@ -94,35 +92,6 @@ func findOverlaps(firstKeys, secondKeys map[string]int) (int, int) {
 		}
 	}
 	return distinctOverlaps, totalOverlaps
-}
-
-func getOverlapCalcFunc(fk string, fv int, secondKeys map[string]int, distinctCounter, totalCounter *int) func() {
-	return func() {
-		if sv, ok := secondKeys[fk]; ok {
-			*distinctCounter++
-
-			if fv < sv {
-				*totalCounter += fv
-			} else {
-				*totalCounter += sv
-			}
-		}
-	}
-}
-
-func findOverlapsUsingWorkerPool(firstKeys, secondKeys map[string]int, workerPoolSize int) (int, int) {
-	count := 0
-	totalOverlap := 0
-
-	workerPool := pool.NewWorkerPool(workerPoolSize)
-
-	for fk, fv := range firstKeys {
-		workerPool.AddWorker(getOverlapCalcFunc(fk, fv, secondKeys, &count, &totalOverlap))
-	}
-
-	workerPool.Wait()
-
-	return count, totalOverlap
 }
 
 // IntersectionResult represents result of intersection count
