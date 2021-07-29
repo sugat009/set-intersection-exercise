@@ -24,8 +24,9 @@ const (
 
 func main() {
 	app := &cli.App{
-		Name:  "set-intersection",
-		Usage: "Given two input files in CSV format and a key, the program outputs the total no. of keys and distinct no. of keys in each file. It also provides the total overlap and distinct overlap between the two files.",
+		Name:    "set-intersection-exercise",
+		Usage:   "Given two input files in CSV format and a key, the program outputs the total no. of keys and distinct no. of keys in each file. It also provides the total overlap and distinct overlap between the two files.",
+		Version: "0.0.1",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:   flagFirstFile,
