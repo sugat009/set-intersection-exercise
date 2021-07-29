@@ -22,7 +22,8 @@ func NewApp(readKeysFunc ReadKeyFromFileFunc) App {
 
 // App represents a run of app
 type App struct {
-	// func to use to parse input files for keys
+	// This allows the caller to pass in the read function depending on the file
+	// so that other file types can be used (eg. json, xml)
 	readKeyFromFile ReadKeyFromFileFunc
 }
 
