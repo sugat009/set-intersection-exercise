@@ -39,6 +39,12 @@ Total overlapping keys:                          [total overlapping keys]
 Distinct overlapping keys:                       [total distinct keys]
 ```
 
+### Need Help ?
+
+```sh
+./set-intersection-exercise --help
+```
+
 ## To Test
 
 ```sh
