@@ -4,7 +4,7 @@ Given two input files in CSV format and a key, the program outputs the total no.
 
 ## Installing
 
-You can download the pre-built binaries from the [release page](https://github.com/rickyshrestha/set-interserction-exercise/releases)
+You can download the pre-built binaries from the [release page](https://github.com/rickyshrestha/set-intersection-exercise/releases)
 
 ### Building from source
 
