@@ -1,4 +1,4 @@
-# set-intersection
+# set-intersection-exercise
 
 Given two input files in CSV format and a key, the program outputs the total no. of keys and distinct no. of keys in each file. It also provides the total overlap and distinct overlap between the two files.
 
